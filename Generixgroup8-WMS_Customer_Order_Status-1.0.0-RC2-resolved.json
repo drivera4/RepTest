@@ -1,0 +1,554 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "WMS Customer Order Status (1.0.0-RC2)",
+    "description": "This api allows to list **the change of status of CUSTOMER ORDERS**\n\nEach endpoint must be called with an access token (Bearer)\n\nThis token is retrieved by a call to the authorization endpoint described in [Generix Auth Service API](https://app.swaggerhub.com/apis/Generixgroup8/GNX-Auth_Service).\n\nYou should also add the header `x-api-key` with your API Key, provided with your credentials.\n",
+    "contact": {
+      "name": "Generix API Support",
+      "email": "eq_swagger@generixgroup.com"
+    },
+    "version": "1.0.0-RC2"
+  },
+  "servers": [
+    {
+      "url": "https://api.warehouse.generix.biz/customer-order-status-service",
+      "description": "Prod public URLs"
+    },
+    {
+      "url": "https://api.staging.warehouse.generix.biz/customer-order-status-service",
+      "description": "Stage public URLs"
+    },
+    {
+      "url": "https://api.dev.warehouse.generix.biz/customer-order-status-service",
+      "description": "Dev internal URLs"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    },
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/v1/warehouses/{warehouseId}/orderStatus": {
+      "get": {
+        "tags": [
+          "Orders Status"
+        ],
+        "summary": "Status of orders in delivery",
+        "parameters": [
+          {
+            "name": "Request-Id",
+            "in": "header",
+            "description": "Header parameter used to correlate logs from several components",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "warehouseId",
+            "in": "path",
+            "description": "Path parameter for warehouse id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/WarehouseId"
+            }
+          },
+          {
+            "name": "eventId",
+            "in": "query",
+            "description": "Query parameter for Event ID",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EventId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List the status per customer order",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderStatusList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error 400 : Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "errorCode": "MISSING_REQUIRED_FIELD",
+                  "errorMessage": "Invalid request format"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error 403 : Forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "errorCode": "40305",
+                  "errorMessage": null
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error 404 : Resource Not Found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "errorCode": "MISSING_RESOURCE",
+                  "errorMessage": "Requested Product is Not Found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error 500 : Server Internal Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "errorCode": "INTERNAL_ERROR",
+                  "errorMessage": null
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/versions": {
+      "get": {
+        "tags": [
+          "Version"
+        ],
+        "summary": "Get API & Build versions",
+        "description": "Get API & Build versions",
+        "responses": {
+          "200": {
+            "description": "Version information of the API service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Version"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error 400 : Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "errorCode": "MISSING_REQUIRED_FIELD",
+                  "errorMessage": "Invalid request format"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error 403 : Forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "errorCode": "40305",
+                  "errorMessage": null
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error 500 : Server Internal Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "errorCode": "INTERNAL_ERROR",
+                  "errorMessage": null
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error 503 : Unavailable Resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "errorCode": "RESOURCE_ERROR",
+                  "errorMessage": null
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default error : Undefined Error Case.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "errorCode": "UNEXPECTED_ERROR",
+                  "errorMessage": null
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "OrderStatusList": {
+        "maxItems": 100000,
+        "minItems": 1,
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/OrderStatus"
+        }
+      },
+      "OrderStatus": {
+        "type": "object",
+        "properties": {
+          "transmitterCode": {
+            "$ref": "#/components/schemas/transmitterCode"
+          },
+          "exchangeReceiver": {
+            "$ref": "#/components/schemas/exchangeReceiver"
+          },
+          "exchangeDateTime": {
+            "$ref": "#/components/schemas/exchangeDateTime"
+          },
+          "number": {
+            "$ref": "#/components/schemas/Number"
+          },
+          "subNumber": {
+            "$ref": "#/components/schemas/SubNumber"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/OrderReference"
+          },
+          "isOrderBlocked": {
+            "$ref": "#/components/schemas/isOrderBlocked"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusCode"
+          },
+          "waveNumber": {
+            "maximum": 99999999,
+            "minimum": 0,
+            "type": "integer",
+            "description": ".",
+            "format": "int32"
+          },
+          "customerCode": {
+            "$ref": "#/components/schemas/CustomerCode"
+          },
+          "cancellationReasonCode": {
+            "maxLength": 3,
+            "type": "string",
+            "description": "."
+          },
+          "roundRecordNumber": {
+            "maximum": 99999999,
+            "minimum": 0,
+            "type": "integer",
+            "description": ".",
+            "format": "int32"
+          },
+          "isWaveCancelled": {
+            "type": "boolean",
+            "description": "."
+          },
+          "dockNumber": {
+            "maximum": 999,
+            "minimum": 0,
+            "type": "integer",
+            "description": ".",
+            "format": "int32"
+          },
+          "typeCode": {
+            "maxLength": 3,
+            "type": "string",
+            "description": "."
+          },
+          "uuidOrder": {
+            "type": "string",
+            "description": "Reference (UUID) of the order",
+            "format": "uuid"
+          }
+        },
+        "description": "."
+      },
+      "StatusCode": {
+        "type": "string",
+        "description": ".",
+        "enum": [
+          "UNSCHEDULED",
+          "SCHEDULED",
+          "BEING_RECEIVED",
+          "RECEIVED",
+          "TRANSMITTED",
+          "CANCELLED",
+          "ARCHIVED"
+        ]
+      },
+      "transmitterCode": {
+        "maxLength": 14,
+        "type": "string",
+        "description": "."
+      },
+      "exchangeReceiver": {
+        "maxLength": 14,
+        "type": "string",
+        "description": "."
+      },
+      "exchangeDateTime": {
+        "type": "string",
+        "description": ".",
+        "format": "date-time"
+      },
+      "isOrderBlocked": {
+        "type": "boolean",
+        "description": "."
+      },
+      "WarehouseId": {
+        "pattern": "^FGE|fge[0-9]{2}[a-zA-Z0-9]{1,5}$",
+        "type": "string",
+        "description": "Internal Warehouse code or identifier"
+      },
+      "EventId": {
+        "type": "string",
+        "description": "The unique identifier of the event related to a response message",
+        "format": "uuid",
+        "example": "97207c7f-9dc2-44a5-b113-9d0275768b6f"
+      },
+      "Error": {
+        "required": [
+          "errorCode"
+        ],
+        "type": "object",
+        "properties": {
+          "errorCode": {
+            "type": "string",
+            "description": "Short numerical or alphanumerical code that identifies precisely a unique error. For security reasons, this code shall not be too explicit, that's why numerical values are preferred",
+            "example": "MISSING_REQUIRED_FIELD"
+          },
+          "errorMessage": {
+            "type": "string",
+            "description": "Contains information on the error. Not intended to be displayed to an end user. For security reasons, a tradeof between clarity & security shall be found.",
+            "example": "Invalid request format"
+          }
+        },
+        "description": "Standardized HTTP error content"
+      },
+      "Version": {
+        "required": [
+          "apiVersion",
+          "buildVersion"
+        ],
+        "type": "object",
+        "properties": {
+          "apiVersion": {
+            "pattern": "^[0-9]*\\\\.[0-9]*(\\\\.[0-9]*)?",
+            "type": "string",
+            "description": "Version of the interface (/API) that was the reference for the realization/evolution of the component",
+            "example": "1.2"
+          },
+          "buildVersion": {
+            "pattern": "^[0-9]*\\\\.[0-9]*[0-9]*\\\\.[0-9]*\\\\.[0-9]*(-(SNAPSHOT|RELEASE))?",
+            "type": "string",
+            "description": "Version number of the component",
+            "example": "3.7.5-SNAPSHOT"
+          },
+          "buildDate": {
+            "type": "string",
+            "description": "Build date of the component",
+            "format": "date-time"
+          },
+          "buildNumber": {
+            "pattern": "^[a-zA-Z0-9]*$",
+            "type": "string",
+            "description": "Number assigned by the automation",
+            "example": "546739"
+          }
+        }
+      },
+      "Number": {
+        "maximum": 99999999,
+        "minimum": 0,
+        "type": "integer",
+        "description": "Order Number",
+        "format": "int32"
+      },
+      "SubNumber": {
+        "maximum": 999,
+        "minimum": 0,
+        "type": "integer",
+        "description": "Order Sub Number",
+        "format": "int32"
+      },
+      "OrderReference": {
+        "maxLength": 30,
+        "type": "string",
+        "description": "Order Reference"
+      },
+      "CustomerCode": {
+        "maxLength": 17,
+        "type": "string",
+        "description": "Customer Code"
+      }
+    },
+    "responses": {
+      "OrderStatusGetResponse": {
+        "description": "List the status per customer order",
+        "content": {
+          "application/json; charset=utf-8": {
+            "schema": {
+              "$ref": "#/components/schemas/OrderStatusList"
+            }
+          }
+        }
+      },
+      "Error400Response": {
+        "description": "Error 400 : Bad request.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "errorCode": "MISSING_REQUIRED_FIELD",
+              "errorMessage": "Invalid request format"
+            }
+          }
+        }
+      },
+      "Error403Response": {
+        "description": "Error 403 : Forbidden.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "errorCode": "40305",
+              "errorMessage": null
+            }
+          }
+        }
+      },
+      "Error404Response": {
+        "description": "Error 404 : Resource Not Found.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "errorCode": "MISSING_RESOURCE",
+              "errorMessage": "Requested Product is Not Found"
+            }
+          }
+        }
+      },
+      "Error500Response": {
+        "description": "Error 500 : Server Internal Error.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "errorCode": "INTERNAL_ERROR",
+              "errorMessage": null
+            }
+          }
+        }
+      },
+      "VersionGetResponse": {
+        "description": "Version information of the API service",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Version"
+            }
+          }
+        }
+      },
+      "Error503Response": {
+        "description": "Error 503 : Unavailable Resource.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "errorCode": "RESOURCE_ERROR",
+              "errorMessage": null
+            }
+          }
+        }
+      },
+      "DefaultErrorResponse": {
+        "description": "Default error : Undefined Error Case.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "errorCode": "UNEXPECTED_ERROR",
+              "errorMessage": null
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "name": "x-api-key",
+        "in": "header"
+      }
+    }
+  }
+}
